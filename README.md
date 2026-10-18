@@ -7,178 +7,128 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![SHAP](https://img.shields.io/badge/Explainability-SHAP-2B6CB0)](https://shap.readthedocs.io/)
 
-**Repository:** [github.com/zainabK06/churn-prediction](https://github.com/zainabK06/churn-prediction)  
 **Live demo:** https://churn-prediction-7l8f6ncxddwvlrethfpmir.streamlit.app/
 
 ---
 
-## Project highlights
+## About the project
 
-| Metric | Result |
-|---|---:|
-| Customer records | **7,043** |
-| Observed churn rate | **26.5%** |
-| Final model | **Class-weighted Logistic Regression** |
-| Test ROC-AUC | **0.8439** |
-| Churn-class recall | **80.21%** |
-| Churn-class precision | **50.85%** |
-| Churn-class F1 | **0.6224** |
-| Average precision (PR analysis) | **0.6458** |
-| Actual churners reached in top 20% of test customers | **49.47%** |
-| Lift at 20% targeting | **2.47×** vs. random targeting |
+**Customer churn** happens when a customer stops using a company's service. For a telecom provider, this can mean a subscriber cancelling their phone or internet plan.
 
-> **Key takeaway:** Ranking the 1,409 held-out test customers by model score placed **185 of the 374 actual churners** within the highest-risk 282 customers (the top ~20%). This indicates useful targeting performance; identifying a customer does **not** mean preventing their churn.
+Not all customers have the same likelihood of leaving. Some are new, some have long-term contracts, and others use different services or payment methods. The **Customer Churn Prediction & Retention Dashboard** uses customer information to highlight potential churn risk and present it in a way that is useful for business decisions.
 
-## The problem
+The application is designed to answer four questions:
 
-Customer churn occurs when subscribers stop using a company's service. For a telecom provider, understanding which customers are at risk can help focus customer-support and retention efforts where they may be most useful.
+- **Who might leave?** Identify customers with higher predicted churn scores.
+- **What influences the predictions?** Explore customer characteristics that matter to the model.
+- **How much monthly billing is associated with at-risk customers?** Compare monthly charges across risk groups.
+- **Who should receive attention first?** View suggested outreach priorities and possible retention actions.
 
-This project addresses three practical questions:
+The dashboard is an educational demonstration using historical telecom customer data, not a live system connected to a real telecom company's customers.
 
-1. **Who is at risk?** Rank customers by the model's churn score.
-2. **Why are they flagged?** Examine influential features with SHAP.
-3. **What should the business do next?** Group customers by risk and billing value, estimate monthly charges associated with high-risk groups, and provide rule-based outreach suggestions.
+## Explore the dashboard
 
-## Interactive dashboard
+The Streamlit application has four pages. No machine learning knowledge is needed to use the interface.
 
-The Streamlit application contains four pages:
+| Page | What it shows | Why it is useful |
+|---|---|---|
+| **Overview** | Customer totals, historical churn trends, factors influencing predictions, and a chart of customer risk groups | Understand the customer base and major churn patterns |
+| **At-Risk Customers** | Customers ranked by predicted churn score, with filters, priority levels, and suggested actions | Find customers who may need attention |
+| **Business Insights** | Monthly charges associated with different risk groups and customers grouped by outreach priority | Understand the billing exposure and plan follow-ups |
+| **Customer Drill-Down** | A form that predicts churn risk for one customer based on their details | Explore an individual customer's risk assessment |
 
-| Page | Features |
+### 1. Overview: understand churn patterns
+
+The Overview page combines two kinds of information:
+
+- **Historical churn rates:** The share of customers who actually left, shown by contract type and length of time with the company (*tenure*).
+- **Model insights:** The customer characteristics that most strongly influence predictions, plus the number of customers placed in each predicted risk group.
+
+For example, the historical data shows that about **42.7% of month-to-month customers** churned, compared with about **2.8% of two-year-contract customers**. This is an association in the dataset, not proof that changing a contract will prevent churn.
+
+The **Factors Influencing Churn Predictions** chart uses SHAP, an explanation technique. Longer bars indicate greater influence on the model's predictions overall. A longer bar does **not** automatically mean that a characteristic increases churn risk; its influence can go in either direction.
+
+<img width="1920" height="2057" alt="image" src="https://github.com/user-attachments/assets/03108033-e4f6-4570-9363-0fff88eaf8c0" />
+
+### 2. At-Risk Customers: see who may need attention
+
+Each customer receives a churn-risk score from the model. The application groups scores into these simple dashboard tiers:
+
+| Risk tier | Model score |
 |---|---|
-| **Overview** | Historical churn statistics; SHAP feature-importance chart; churn rate by contract and tenure; predicted-risk distribution |
-| **At-Risk Customers** | Ranked held-out customers, contract/risk filters, customer value, priority labels, and suggested outreach actions |
-| **Business Insights** | High-risk monthly charges, share of monthly billing associated with high-risk customers, billing totals by risk tier, and outreach-priority counts |
-| **Customer Drill-Down** | Individual customer input form, automatic feature engineering, churn score, risk classification, and suggested retention action |
+| **High** | 70% or above |
+| **Medium** | 40% to below 70% |
+| **Low** | Below 40% |
 
-**Screenshots:** Add actual app screenshots under `assets/` and insert them here once available. Suggested images are an Overview screenshot and a Business Insights screenshot. No screenshots are embedded by default to avoid broken links.
+Customers can be filtered by risk tier and contract type. The table also displays monthly charges, customer value, outreach priority, and a suggested action.
 
-### How to interpret the business metrics
+These thresholds are **illustrative categories**, not scientifically validated cutoffs. A score of 80% should not be interpreted as a confirmed 80% real-world chance of churn.
 
-- **High-risk customers** are those with model scores of **70% or higher**; Medium is **40% to below 70%**, and Low is **below 40%**. These are *illustrative dashboard thresholds*, not calibrated real-world probabilities.
-- **High-risk monthly charges** is the **sum of monthly bills** for customers in the High tier. It is **not an estimate of money already lost or guaranteed future losses**.
-- **Outreach priority** combines model risk with billing value (High Value means monthly charges at or above the median in the analyzed test set). These priorities and recommended actions are **transparent rules**, not outputs of an independently trained recommendation model.
-- The dataset does not establish a verified currency, so the dashboard does not assume a currency symbol.
+<img width="1920" height="1273" alt="AdobeExpressPhotos_3d553a91444c4bc389b4f12f53da5fc9_CopyEdited" src="https://github.com/user-attachments/assets/87ae50a4-bf53-4d37-8507-9b7bba64a0f3" />
 
-## Dataset
+### 3. Business Insights: put risk into context
 
-The analysis uses a **telecom customer churn dataset** with **7,043 customers** and **21 original columns**, including customer demographics, tenure, subscribed services, contract, billing information, and churn outcome.
+The Business Insights page adds a practical business perspective:
 
-| Target class | Customers | Share |
-|---|---:|---:|
-| Did not churn | 5,174 | 73.5% |
-| Churned | 1,869 | 26.5% |
+- **High-Risk Monthly Charges:** The combined monthly bills of customers in the High risk tier.
+- **Revenue Exposure:** The percentage of all monthly charges in the analyzed group that comes from High-risk customers.
+- **Monthly Charges by Risk Tier:** How much the company bills customers in the High, Medium, and Low risk groups.
+- **Customers by Outreach Priority:** How many customers are marked Critical, High, or Routine for follow-up.
 
-The target is imbalanced: roughly one in four customers churned. The project uses a **stratified 80/20 train-test split** (`random_state=42`), yielding **5,634 training** and **1,409 test** customers. The 1,409-customer test set includes **374 churners**.
+**Important:** High-risk monthly charges are **not revenue already lost** and are **not a prediction of how much money will be lost**. They show the amount of current monthly billing associated with customers flagged by the model. The source dataset does not establish a currency, so the app does not assume one.
 
-> The Overview page describes the full historical dataset; the risk-ranking, prioritization, and revenue-exposure demonstrations use the held-out test subset. These populations should not be confused.
+#### How outreach priority works
 
-## Methodology
+Outreach priority considers both the model's risk tier and the customer's monthly charges. Customers with charges at or above the group's median are labeled **High Value**; others are **Standard Value**.
 
-### 1. Exploratory data analysis
-
-Investigated the target distribution and relationships between churn and tenure, contract type, monthly charges, services, and billing options.
-
-Notable descriptive findings:
-
-- **Month-to-month customers:** ~**42.7%** churn, compared with **11.3%** on one-year contracts and **2.8%** on two-year contracts.
-- **Tenure:** Customers who churned tended to have shorter tenure; the median tenure was approximately **10 months** for churners versus **38 months** for non-churners.
-- **Payment:** Customers paying by electronic check had an observed churn rate of approximately **45.3%**.
-- These are **associations**, not demonstrations of causality.
-
-### 2. Cleaning and preprocessing
-
-- Removed `customerID` from model inputs.
-- Converted `TotalCharges` into numeric form and addressed missing/blank values.
-- Converted binary categories into numerical values and used one-hot encoding for multi-category variables.
-- Standardized inputs within the final Logistic Regression training pipeline using `StandardScaler`.
-- Preserved a stratified held-out test set for final evaluation.
-
-### 3. Feature engineering
-
-Created features intended to represent customer lifecycle, services, and billing context:
-
-| Feature | Description |
+| Priority | Meaning |
 |---|---|
-| `tenure_bucket` | Tenure bands: 0–6 months, 7–12 months, 13–24 months, 25+ months |
-| `total_services` | Count of six internet add-on subscriptions |
-| `has_internet` | Indicator for an active internet service |
-| `high_risk_combo` | Indicator for **month-to-month contract + electronic-check payment** |
-| `charge_vs_service_avg` | Difference between the customer's monthly bill and the mean bill for their internet-service group |
+| **Critical** | High-risk customer with relatively high monthly charges |
+| **High** | High-risk customer with standard charges, or medium-risk customer with high charges |
+| **Routine** | Other customers who can receive normal engagement and support |
 
-An exploratory feature comparison showed **only a marginal improvement in ROC-AUC** from engineered features. Their SHAP importance does not by itself establish that they improved predictive performance.
+The app suggests actions such as personalized outreach, onboarding assistance, satisfaction checks, or an optional contract incentive. These are **simple business rules**, not recommendations proven to stop churn.
 
-### 4. Class imbalance handling
+<img width="1896" height="1793" alt="AdobeExpressPhotos_fd4d068a07f34cf18df8278e97517991_CopyEdited" src="https://github.com/user-attachments/assets/50d369f4-b4e2-4d6e-9fd1-066917c76c86" />
 
-Compared **balanced class weights**, **SMOTE oversampling**, and **random undersampling**. Their results were broadly similar. The final Logistic Regression uses `class_weight='balanced'`, prioritizing recall of customers who churn over minimizing false alerts.
+### 4. Customer Drill-Down: check an individual customer
 
-### 5. Model comparison and selection
+A user can enter details such as contract type, tenure, services, payment method, and monthly charges. The app then displays:
 
-Compared Logistic Regression, Random Forest, and XGBoost using **5-fold stratified cross-validation**, then performed a focused `GridSearchCV` search on Logistic Regression.
+- A **model churn score** and High/Medium/Low risk tier.
+- A simple visual indicator of the score.
+- A suggested outreach priority and retention action.
 
-**Held-out test-set results (positive class = churn):**
+The form asks for familiar customer details. Additional calculated fields are generated automatically before the information is passed to the trained model.
 
-| Model | Precision | Recall | F1 | ROC-AUC |
-|---|---:|---:|---:|---:|
-| **Logistic Regression (selected)** | **0.5085** | **0.8021** | **0.6224** | 0.8439 |
-| Random Forest | 0.5497 | 0.6364 | 0.5898 | 0.8204 |
-| XGBoost | 0.5435 | 0.6845 | 0.6059 | 0.8228 |
-| Tuned Logistic Regression | 0.5059 | 0.7995 | 0.6197 | **0.8451** |
+<img width="1920" height="2017" alt="AdobeExpressPhotos_d7fda206333a4399994b959b0c629f31_CopyEdited" src="https://github.com/user-attachments/assets/acea0812-1096-4229-aa62-8e64fb887328" />
 
-**Why the original Logistic Regression?** Tuning delivered a very small increase in ROC-AUC, while the original model retained slightly better churn recall and F1. It was selected for a balance of churn detection, interpretability, and simplicity.
+## Model performance at a glance
 
-### 6. Ranking quality and business targeting
+The dashboard uses a **Logistic Regression** model, a machine learning method that looks for patterns in past customer data and assigns scores to new customer records.
 
-The final model achieved:
+| Measure | Result | What it means |
+|---|---:|---|
+| Customers in the dataset | **7,043** | Historical customer records available for analysis |
+| Historical churn rate | **26.5%** | Roughly one in four customers in the dataset left |
+| Churn recall | **80.2%** | The model identified about eight out of ten actual churners at its classification threshold |
+| Churn precision | **50.9%** | About half of customers predicted to churn actually did in the test data |
+| ROC-AUC | **0.844** | Indicates good ability to rank customers who churned above those who stayed |
+| Churners found in the top 20% of risk scores | **49.5%** | The highest-risk fifth of the test group contained almost half of its actual churners |
 
-- **ROC-AUC:** 0.8439.
-- **Average precision:** 0.6458, compared with the churn-prevalence baseline of approximately 0.2654.
-- **Cumulative gains:** Targeting the top ~20% of customers by model score captured **185 / 374 = 49.47%** of actual churners in the held-out test set.
-- **Cumulative lift:** **2.47×** at that targeting level compared with random selection in expectation.
+**What does the final result mean in practice?** In a held-out group of **1,409 customers**, the top **282 customers** ranked by model score included **185 of the 374 customers who actually churned**. This suggests that a focused outreach list can reach more potential churners than choosing customers at random.
 
-This is useful for *ranking* a limited outreach list. It does not measure the impact or success rate of any retention campaign.
+Identifying a customer who later churns does not mean the company can necessarily prevent them from leaving. The model also produces false alarms, so scores should support human decisions rather than replace them.
 
-### 7. Explainability with SHAP
+## What's inside this repository?
 
-Used **SHAP's LinearExplainer** with a sample of standardized training observations as background to explain the final Logistic Regression model.
-
-The global feature-importance and beeswarm plots highlighted features such as:
-
-- Monthly charges relative to customers with the same internet-service type.
-- Long-term contract indicators.
-- Customer tenure and tenure bands.
-- Streaming services, multiple lines, and fiber-optic internet.
-- Electronic-check payment.
-
-The local waterfall plot broke down a selected high-risk customer's model score into feature-level contributions, illustrating how SHAP can explain *why a customer was flagged*.
-
-**Interpretation caution:** These contributions explain the trained model's behavior, **not causal drivers** of churn. For this linear explainer, contributions are in **log-odds**, not direct percentage-point changes in churn probability.
-
-### 8. Business-facing application
-
-The Streamlit dashboard presents model scores, risk tiers, billing exposure, customer prioritization, and simple retention suggestions in a format intended for nontechnical users. Business recommendations are **heuristics** based on available features; no campaign outcomes or retention effectiveness were measured.
-
-## Tech stack
-
-| Area | Tools |
-|---|---|
-| Language and data | Python, pandas, NumPy |
-| Visualization and EDA | Matplotlib, Seaborn |
-| Machine learning | scikit-learn, XGBoost, imbalanced-learn |
-| Explainability | SHAP |
-| Dashboard | Streamlit, Altair |
-| Model persistence | joblib |
-| Notebooks | Jupyter Notebook |
-| Version control | Git and GitHub |
-
-## Project structure
+The repository contains the dashboard, the customer data needed for the demonstration, the trained model, and Jupyter notebooks that document the supporting analysis.
 
 ```text
 churn-prediction/
 ├── app/
 │   └── streamlit_app.py
 ├── data/
-│   ├── raw/
-│   │   └── churn_data.csv
 │   └── processed/
 │       └── churn_engineered.csv
 ├── models/
@@ -195,65 +145,58 @@ churn-prediction/
 └── README.md
 ```
 
-*Structure shows the expected deployment layout. The filenames in your local/GitHub notebook directory may differ slightly; adjust this tree to match the repository if needed. The app specifically expects `models/churn_model_phase2.pkl` and `data/processed/churn_engineered.csv`.*
+*Notebook filenames may differ slightly in the repository (for example, some versions have `(1)` in their names). The app, dataset, and model paths must match the actual files.*
 
-## Run locally
+| File or folder | What it is for |
+|---|---|
+| `app/streamlit_app.py` | The web application, including charts, customer filters, predictions, and business insights |
+| `data/processed/churn_engineered.csv` | The prepared customer dataset used by the application |
+| `models/churn_model_phase2.pkl` | The saved, trained model that produces churn scores |
+| `01_eda.ipynb` | Exploration of customer characteristics and churn patterns |
+| `02_cleaning.ipynb` | Preparing and cleaning customer records |
+| `03_model.ipynb` | Initial churn prediction model |
+| `04_feature_engineering.ipynb` | Additional customer indicators derived from existing information |
+| `05_imbalance_and_models.ipynb` | Model comparisons and handling the uneven number of churners and non-churners |
+| `06_model_evaluation.ipynb` | Model performance and customer-ranking evaluation |
+| `07_explainability.ipynb` | Explanation of the features influencing model predictions |
+| `requirements.txt` | Python libraries needed to run the dashboard |
 
-**Prerequisites:** Python and pip, plus the project files shown above.
+The notebooks are available for readers who want technical detail, but **they are not required to use the dashboard**.
+
+## Run the dashboard locally
+
+**Requirements:** Python and Git, with the model and processed dataset included in the repository.
 
 ```bash
-# 1. Clone the repository
+# Get the repository
 git clone https://github.com/zainabK06/churn-prediction.git
 cd churn-prediction
 
-# 2. Create a virtual environment
+# Create a Python environment
 python -m venv .venv
 
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-
-# macOS / Linux
-# source .venv/bin/activate
-
-# 3. Install dependencies
+# Install dependencies
 python -m pip install -r requirements.txt
 
-# 4. Launch the dashboard
+# Start the dashboard
 streamlit run app/streamlit_app.py
 ```
 
-Open the local address shown in your terminal (typically `http://localhost:8501`).
+Activate `.venv` before installing dependencies if needed: `.venv\Scripts\activate` on Windows, or `source .venv/bin/activate` on macOS/Linux. Open the local address printed in the terminal (usually `http://localhost:8501`).
 
-**Required runtime files:**
+## Technologies
 
-- `data/processed/churn_engineered.csv`
-- `models/churn_model_phase2.pkl`
+**Python** powers the project. **pandas** and **NumPy** manage customer data; **scikit-learn** runs the trained Logistic Regression model; **SHAP** explains influential model features; **Streamlit** and power the interactive dashboard; and **joblib** loads the saved model. **Jupyter notebooks** provide additional technical detail for anyone interested in the analysis.
 
-If `data/` and `models/` are ignored by Git, these two files must still be present in the deployed repository or provisioned through another supported source. The app will not run without them.
+## Important limitations
 
-**Model artifact note:** The attached training and explainability notebooks save/load `churn_model_final.pkl`, whereas the Streamlit app expects `churn_model_phase2.pkl`. The file deployed under the latter name must be the **same selected fitted Logistic Regression pipeline**, not a different model or a newly trained approximation.
-
-## Limitations and responsible interpretation
-
-- **One historical dataset:** Performance may not generalize to other telecom companies, periods, or customer populations.
-- **False positives:** The model is recall-oriented; some customers flagged as high-risk will not actually churn. For example, the churn-class test precision is approximately 50.9%.
-- **Uncalibrated scores:** Balanced class weights can distort probability calibration. Scores and the 40%/70% dashboard risk tiers should be viewed as **prioritization indicators**, not verified real-world probabilities.
-- **No causal claims:** SHAP and descriptive correlations do not demonstrate that changing a contract, service, or payment method will prevent churn.
-- **No measured intervention benefit:** Revenue exposure is monthly billing associated with high-risk customers, **not expected or realized losses**. Outreach actions are suggested rules and have not been evaluated experimentally.
-- **Demo data:** The at-risk and business insights pages use the **1,409 held-out test customers**; row identifiers in the app are demo identifiers rather than original customer IDs.
-- **Reproducibility:** Feature transformations used for new individual-customer predictions should remain consistent with the transformations applied during training.
-
-## What I learned
-
-This beginner end-to-end project strengthened my understanding of how to:
-
-- Explore and clean tabular data, and reason about an imbalanced classification target.
-- Design and assess engineered features instead of assuming every new feature improves performance.
-- Compare models with stratified cross-validation and evaluate precision–recall trade-offs.
-- Evaluate a model not just by accuracy or ROC-AUC but also by **how well it ranks customers for limited outreach capacity**.
-- Explain global and individual model predictions with SHAP.
-- Turn notebook results into a working Streamlit application with transparent business rules.
+- **Risk scores are estimates, not certainties.** The model uses balanced class weights, and its scores have not been calibrated as real-world churn probabilities.
+- **Some high-risk predictions are incorrect.** The model is designed to find many potential churners, which also creates false positives.
+- **Revenue exposure is not revenue loss.** Monthly charges are used as a simple indicator of customer billing value, not profit or guaranteed financial loss.
+- **Suggested retention actions are illustrative.** The dataset does not show whether the suggested actions actually improve customer retention.
+- **Not every chart uses the same group.** Historical customer trends use all **7,043** records; risk rankings and business insights use the **1,409-customer test group**.
+- **The application is a portfolio demonstration.** It is not connected to live telecom systems or designed to make automated, high-stakes decisions.
 
 ---
 
-**Project scope:** An educational, beginner-level end-to-end machine learning and analytics application. It is designed to demonstrate practical workflow and analytical reasoning, not to serve as a production-validated retention decision system.
+**In short:** This project turns customer churn predictions into an understandable, interactive dashboard that connects customer behavior, model-based risk, monthly billing, and possible retention actions.
